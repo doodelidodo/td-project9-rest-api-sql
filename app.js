@@ -4,6 +4,15 @@
 const express = require('express');
 const morgan = require('morgan');
 
+// Get references to our models.
+const User = require('./models').User;
+const Course = require('./models').Course;
+
+//routes
+const coursesRouter = require('./routes/courses');
+const usersRouter = require('./routes/users');
+
+
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
@@ -13,8 +22,12 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+app.use(express.json());
+app.use('/api/courses', coursesRouter);
+app.use('/api/users', usersRouter);
+
 // setup a friendly greeting for the root route
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
   });
