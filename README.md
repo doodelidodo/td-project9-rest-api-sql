@@ -1,6 +1,5 @@
 # Rest Api with SQL and Express
- This is the first part (backend) of my final project for the Treehouse Techdegree. It's a simple Rest Api with a 2 sql tables
-with two sql tables. 
+ This is the first part (backend) of my final project for the Treehouse Techdegree. It's a simple Rest Api with 2 sql tables. 
 
 You can create users and courses. for this purpose, authentication is carried out for certain queries. e.g. only your own user data can be called up. for this, the email and password must match.
 
