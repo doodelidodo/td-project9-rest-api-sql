@@ -8,6 +8,7 @@ Validations are also built in. for example, a valid email address must be transf
 ### To start the app
 - navigate to the app folder
 - npm install
+- Create the database using npm run seed
 - npm start
 
 ### To test the app
