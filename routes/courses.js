@@ -12,7 +12,8 @@ router.get('/', asyncHandler( async (req, res) => {
       include: [
          {
             model: User,
-            as: 'user'
+            as: 'user',
+            attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
          }
       ]
    });
@@ -25,7 +26,8 @@ router.get('/:id', asyncHandler( async (req, res) => {
       include: [
          {
             model: User,
-            as: 'user'
+            as: 'user',
+            attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
          }
       ]
    });
@@ -41,7 +43,7 @@ router.get('/:id', asyncHandler( async (req, res) => {
 router.post('/', authenticateUser, asyncHandler( async (req, res) => {
    try {
       await Course.create(req.body);
-      res.status(204).end()
+      res.status(201).end();
    } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
          const errors = error.errors.map(err => err.message);
@@ -54,22 +56,32 @@ router.post('/', authenticateUser, asyncHandler( async (req, res) => {
 
 router.put('/:id', authenticateUser, asyncHandler( async (req, res) => {
    const course = await Course.findByPk(req.params.id);
-   if (course) {
-      const userId = req.currentUser.id;
-      const isCourseOwner = course.userId === userId;
-      if(isCourseOwner) {
-         await course.update(req.body);
-         res.status(204).end();
+   try {
+      if (course) {
+         const userId = req.currentUser.id;
+         const isCourseOwner = course.userId === userId;
+         if(isCourseOwner) {
+            await course.update(req.body);
+            res.status(204).end();
+         } else {
+            res.status(403).json({
+               message: "Access forbidden"
+            })
+         }
       } else {
-         res.status(403).json({
-            message: "Access forbidden"
+         res.status(404).json({
+            message: "Course not found"
          })
       }
-   } else {
-      res.status(404).json({
-         message: "Course not found"
-      })
+   } catch(error) {
+      if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+         const errors = error.errors.map(err => err.message);
+         res.status(400).json({ errors });
+      } else {
+         throw error;
+      }
    }
+
 }));
 
 router.delete('/:id', authenticateUser, asyncHandler( async (req, res) => {
